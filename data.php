@@ -18,5 +18,3 @@ $title = 'Главная страница';
 
 
 date_default_timezone_set("Europe/Chisinau");
-
-

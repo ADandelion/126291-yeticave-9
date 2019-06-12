@@ -70,7 +70,7 @@ function lot_expire ($date) {
 };
 
 /**
- *  Заменят числовое описание времени на текстовое
+ *  Заменяет числовое описание времени на текстовое
  * @param $time
  * @return false|string
  */
@@ -114,15 +114,41 @@ function all_lots ($link) {
         ORDER BY lots.date_create desc
 ';
 
-
     $res = mysqli_query($link, $sql);
 
     return mysqli_fetch_all($res, MYSQLI_ASSOC);
 };
 
+/**
+ * Возвращает лоты по категории
+ * @param $link
+ * @param $id
+ * @return array|null
+ */
+function get_lots_by_category($link, $id) {
+
+    $sql = '
+        SELECT 
+              lots.*, categories.name AS cat_name
+        FROM lots
+        JOIN categories on lots.category_id = categories.id
+        WHERE category_id = ? 
+            AND lots.winner_id IS NULL
+            AND lots.date_expire > NOW()
+        GROUP BY lots.id desc, lots.date_create desc
+        ORDER BY lots.date_create desc
+';
+
+    $stmt = db_get_prepare_stmt($link, $sql, [$id]);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+
+    return mysqli_fetch_all($result, MYSQLI_ASSOC);;
+};
+
 
 /**
- * Собираем массив всех категорий
+ * Собирает массив всех категорий
  * @param $link
  * @return array|null
  */
@@ -135,7 +161,7 @@ function all_categories ($link) {
 };
 
 /**
- * Собираем данные лота по id
+ * Собирает данные лота по id
  * @param $link
  * @param $id
  * @return array | null
@@ -160,13 +186,18 @@ function get_one_lot ($link, $id) {
 
     return mysqli_fetch_assoc($result);
 };
+
+
+
 /**
  * Возвращает массив лотов по результату поиска
  * @param $link
  * @param $query
+ * @param $lotsPerPage
+ * @param $offset
  * @return array|null
  */
-function search_query($link, $query) {
+function search_query($link, $query, $lotsPerPage, $offset ) {
 
     $sql = "
       SELECT 
@@ -176,7 +207,9 @@ function search_query($link, $query) {
       JOIN categories on lots.category_id = categories.id
       WHERE MATCH (lots.name,lots.description) AGAINST (?)
           AND lots.winner_id IS NULL
-          AND lots.date_expire > NOW();
+          AND lots.date_expire > NOW()
+      ORDER BY lots.date_create DESC   
+      LIMIT   $lotsPerPage OFFSET $offset; 
 
 ";
 
@@ -188,7 +221,31 @@ function search_query($link, $query) {
 }
 
 /**
- * Записываем новый лот в БД
+ * Возвращает кол-во строк в результате поиского запроса
+ * @param $link
+ * @param $query
+ * @return int
+ */
+function count_lots_per_query ($link, $query) {
+    $sql = "
+      SELECT 
+            id
+      FROM lots
+      WHERE MATCH (lots.name,lots.description) AGAINST (?)
+          AND winner_id IS NULL
+          AND date_expire > NOW()
+
+";
+
+    $stmt = db_get_prepare_stmt($link, $sql, [$query]);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+
+    return mysqli_num_rows($result);
+}
+
+/**
+ * Записывает новый лот в БД
  * @param $link
  * @param array $fields_array
  * @return int|string

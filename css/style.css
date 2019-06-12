@@ -718,6 +718,11 @@ main.container {
   padding: 5px 10px;
 }
 
+.not-active-item {
+  pointer-events: none;
+  color: #f0f0f5 !important;
+}
+
 .pagination-item a:hover {
   color: #45abde;
 }

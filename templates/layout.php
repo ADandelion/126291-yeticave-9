@@ -17,8 +17,8 @@
             </a>
 
             <form class="main-header__search" method="get" action="search.php">
-                <input type="search" name="search" placeholder="Поиск лота">
-                <input class="main-header__search-btn" type="submit" name="find" value="Найти">
+                <input type="search" name="search" placeholder="<?= empty($_GET['search']) ? 'Поиск' : $_GET['search'] ?>">
+                <input class="main-header__search-btn" type="submit" name="find" value="<?=$_GET['search'];?> ">
             </form>
 
             <a class="main-header__add-lot button" href="add.php">Добавить лот</a>
@@ -35,7 +35,7 @@
 
 
                     <div class="user-menu__logged">
-                        <p style="padding-left:10px ;"> <?=screening_txt($user_name); ?></p>
+                        <p> <?=screening_txt($user_name); ?></p>
                     </div>
 
 
@@ -69,8 +69,8 @@
         <ul class="nav__list container">
 
             <?php foreach ($categories as $index): ?>
-                <li class="nav__item">
-                    <a  href="pages/all-lots.html"><?=screening_txt($index['name']); ?></a>
+                <li class="nav__item <?php if ($index['id'] == $cur): ?> nav__item--current <?php endif;?>">
+                    <a  href="/all-lots.php?catid=<?=$index['id']; ?>"><?=screening_txt($index['name']); ?></a>
                 </li>
             <?php endforeach; ?>
 

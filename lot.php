@@ -20,8 +20,6 @@ if (!isset($_GET['id'])) {
 $lot_id = intval($_GET['id']);
 $lot =  get_one_lot($link, $lot_id);
 
-echo '<pre>' . var_export($lot, true) . '</pre>';
-
 if (empty($lot)) {
 
     $layout_content = include_template('404.php', [
@@ -64,7 +62,8 @@ $content = include_template('lot.php', [
     'categories' => all_categories ($link),
     'lot' => $lot,
     'bets' => $bets,
-    'show_bet_form' => $show_bet_form,]);
+    'show_bet_form' => $show_bet_form
+]);
 
 
 $layout_content = include_template('layout.php', [
@@ -73,7 +72,7 @@ $layout_content = include_template('layout.php', [
     'user_avatar' => $user_avatar,
     'is_auth' => $is_auth,
     'error' => $error,
-    'content' => $content,
+    'content' => $content
 
 ]);
 

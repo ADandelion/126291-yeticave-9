@@ -3,8 +3,8 @@
             <ul class="nav__list container">
 
                 <?php foreach ($categories as $index): ?>
-                    <li class="nav__item">
-                        <a  href="pages/all-lots.html"><?=screening_txt($index['name']); ?></a>
+                    <li class="nav__item <?php if ($index['id'] == $cur): ?> nav__item--current <?php endif;?>">
+                        <a  href="/all-lots.php?catid=<?=$index['id']; ?>"><?=screening_txt($index['name']); ?></a>
                     </li>
                 <?php endforeach; ?>
 
